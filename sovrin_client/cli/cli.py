@@ -100,6 +100,7 @@ class SovrinCli(PlenumCli):
         self.aliases = {}  # type: Dict[str, Signer]
         self.sponsors = set()
         self.users = set()
+        self._agent = None
         super().__init__(*args, **kwargs)
         # Available environments
         self.envs = self.config.ENVS
@@ -109,7 +110,7 @@ class SovrinCli(PlenumCli):
 
         # TODO bad code smell
         self.curContext = Context(None, None, {})  # type: Context
-        self._agent = None
+
 
     @staticmethod
     def getCliVersion():
@@ -224,6 +225,12 @@ class SovrinCli(PlenumCli):
                         self._reqAvailClaims
                         ])
         return actions
+
+    @PlenumCli.activeWallet.setter
+    def activeWallet(self, wallet):
+        PlenumCli.activeWallet.fset(self, wallet)
+        if self._agent:
+            self._agent._wallet = self._activeWallet
 
     @staticmethod
     def _getSetAttrUsage():
@@ -1356,12 +1363,7 @@ class SovrinCli(PlenumCli):
             self.print("Disconnected from {}".format(oldEnv), Token.BoldGreen)
 
         if toConnectToNewEnv is None:
-            self._restoreLastActiveWalletAndUpdateAgentWallet()
-
-    def _restoreLastActiveWalletAndUpdateAgentWallet(self):
-        self.restoreLastActiveWallet()
-        if self._activeWallet and self._agent:
-            self._agent._wallet = self._activeWallet
+            self.restoreLastActiveWallet()
 
     def printWarningIfActiveWalletIsIncompatible(self):
         if self._activeWallet:
@@ -1448,7 +1450,7 @@ class SovrinCli(PlenumCli):
                         PROMPT_ENV_SEPARATOR, oldEnv), ""))
 
                     if isAnyWalletExistsForNewEnv:
-                        self._restoreLastActiveWalletAndUpdateAgentWallet()
+                        self.restoreLastActiveWallet()
 
 
                     self.printWarningIfActiveWalletIsIncompatible()
