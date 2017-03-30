@@ -29,10 +29,10 @@ class AcmeAgent(BaseAgent):
 
         # maps invitation nonces to internal ids
         self._invites = {
-            "57fbf9dc8c8e6acde33de98c6d747b28c": 1,
-            "3a2eb72eca8b404e8d412c5bf79f2640": 2,
-            "8513d1397e87cada4214e2a650f603eb": 3,
-            "810b78be79f29fc81335abaa4ee1c5e8": 4
+            "57fbf9dc8c8e6acde33de98c6d747b28c": "Alice",
+            "3a2eb72eca8b404e8d412c5bf79f2640": "Carol",
+            "8513d1397e87cada4214e2a650f603eb": "Frank",
+            "810b78be79f29fc81335abaa4ee1c5e8": "Craig"
         }
 
         self._attrDefJobCert = AttribDef('Job-Certificate',
@@ -52,25 +52,25 @@ class AcmeAgent(BaseAgent):
 
         # maps internal ids to attributes
         self._attrs = {
-            1: self._attrDefJobCert.attribs(
+            "Alice": self._attrDefJobCert.attribs(
                 first_name="Alice",
                 last_name="Garcia",
                 employee_status="Permanent",
                 experience="3 years",
                 salary_bracket="between $50,000 to $100,000"),
-            2: self._attrDefJobCert.attribs(
+            "Carol": self._attrDefJobCert.attribs(
                 first_name="Carol",
                 last_name="Atkinson",
                 employee_status="Permanent",
                 experience="2 years",
                 salary_bracket="between $60,000 to $90,000"),
-            3: self._attrDefJobCert.attribs(
+            "Frank": self._attrDefJobCert.attribs(
                 first_name="Frank",
                 last_name="Jeffrey",
                 employee_status="Temporary",
                 experience="4 years",
                 salary_bracket="between $40,000 to $80,000"),
-            4: self._attrDefJobCert.attribs(
+            "Craig": self._attrDefJobCert.attribs(
                 first_name="Craig",
                 last_name="Richards",
                 employee_status="On Contract",
