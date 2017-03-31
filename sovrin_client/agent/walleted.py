@@ -163,7 +163,7 @@ class Walleted(AgentIssuer, AgentProver, AgentVerifier):
         if not link:
             # QUESTION: We use wallet.defaultId as the local identifier,
             # this looks ok for test code, but not production code
-            link = Link(str(linkName),
+            link = Link(linkName,
                         self.wallet.defaultId,
                         self.wallet.getVerkey(),
                         invitationNonce=nonce,
