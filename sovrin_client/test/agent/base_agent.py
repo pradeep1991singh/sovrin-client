@@ -2,7 +2,7 @@ import os
 
 from ioflo.base.consoling import Console
 
-from plenum.common.log import Logger, getlogger
+from stp_core.common.log import Logger, getlogger
 from sovrin_client.agent.agent import runBootstrap
 
 from sovrin_client.test.agent.test_walleted_agent import TestWalletedAgent
@@ -25,22 +25,24 @@ class BaseAgent(TestWalletedAgent):
                  client: Client = None,
                  wallet: Wallet = None,
                  port: int = None,
-                 loop=None):
+                 loop=None,
+                 config=None,
+                 endpointArgs=None):
 
-        if not basedirpath:
-            config = getConfig()
-            basedirpath = basedirpath or os.path.expanduser(config.baseDir)
+        config = config or getConfig()
+        basedirpath = basedirpath or os.path.expanduser(config.baseDir)
 
-        portParam, = self.getPassedArgs()
-
-        super().__init__(name, basedirpath, client, wallet,
-                         portParam or port, loop=loop)
-
-        self.claimVersionNumber = 0.01
+        portParam, _ = self.getPassedArgs()
 
         self.logger = getlogger()
 
-        # available claims to anyone whos connection is accepted by the agent
+        super().__init__(name, basedirpath, client, wallet,
+                         portParam or port, loop=loop, config=config,
+                         endpointArgs=endpointArgs)
+
+        self.claimVersionNumber = 0.01
+
+        # available claims to anyone whose connection is accepted by the agent
         self.availableClaimsToAll = []
 
         # available claims only for certain invitation (by nonce)
@@ -59,7 +61,7 @@ class BaseAgent(TestWalletedAgent):
         return self.name.replace(" ","-").lower() + "-schema-version.txt"
 
     def updateClaimVersionFile(self, fileName,):
-        claimVersionFilePath = '{}/{}'.format(self._basedirpath, fileName)
+        claimVersionFilePath = '{}/{}'.format(self.basedirpath, fileName)
         # get version number from file
         if os.path.isfile(claimVersionFilePath):
             try:
@@ -70,18 +72,18 @@ class BaseAgent(TestWalletedAgent):
                     file.write(str(self.claimVersionNumber))
                     file.truncate()
             except OSError as e:
-                self.logger.warn('Error occurred while reading version file: '
+                self.logger.warning('Error occurred while reading version file: '
                                  'error:{}'.format(e))
                 raise e
             except ValueError as e:
-                self.logger.warn('Invalid version number')
+                self.logger.warning('Invalid version number')
                 raise e
         else:
             try:
                 with open(claimVersionFilePath, mode='w') as file:
                     file.write(str(self.claimVersionNumber))
             except OSError as e:
-                self.logger.warn('Error creating version file {}'.format(e))
+                self.logger.warning('Error creating version file {}'.format(e))
                 raise e
 
     def setupLogging(self, filePath):
@@ -125,7 +127,7 @@ class BaseAgent(TestWalletedAgent):
     def getAttrs(self):
         raise NotImplemented
 
-    async def postClaimVerif(self, claimName, link, frm):
+    async def postProofVerif(self, claimName, link, frm):
         pass
 
     async def initAvailableClaimList(self):
